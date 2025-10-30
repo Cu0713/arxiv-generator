@@ -6,7 +6,7 @@ import { XMLParser } from "fast-xml-parser";
 const BASE_URL = "https://export.arxiv.org/api/query";
 
 const fetchArxiv = async () => {
-	const id = Math.floor(Math.random() * 100);
+	const id = Math.floor(Math.random() * 500);
 	const params = {
 		search_query: "cat:math.RT",
 		start: id.toString(),
@@ -22,18 +22,11 @@ const fetchArxiv = async () => {
 	return Array.isArray(entries) ? entries : [entries];
 };
 
-const fetchData = async () => {
-	const id = Math.floor(Math.random() * 50) + 1;
-	const response = await fetch(`${BASE_URL}/${id}/`);
-	console.log(response);
-	return response.json();
-};
-
 const App = () => {
 	const [quote, setQuote] = useState<any>(null);
 	const [isLoading, setIsLoading] = useState<boolean>(true);
 	const [error, setError] = useState<any>(null);
-	const isCoulombBranch: boolean = false;
+	const [isCoulombBranch, setIsCoulombBranch] = useState<boolean>(false);
 
 	useEffect(() => {
 		let active = true;
@@ -69,13 +62,14 @@ const App = () => {
 			const arxivData = await fetchArxiv();
 			const quote = arxivData[0];
 			setQuote(quote);
-			console.log(quote);
 		} catch (error) {
 			console.error("Failed to fetch quote:", error);
 			setError(error);
 		} finally {
 			setIsLoading(false);
 		}
+
+		setIsCoulombBranch(quote.summary.includes("Coulomb branch"));
 	};
 
 	return (
@@ -116,10 +110,16 @@ const App = () => {
 						</div>
 					) : (
 						<>
-							<p className="text-center text-xl">{quote?.title}</p>
+							{isCoulombBranch ? (
+								<p className="text-center text-xl text-red-500">
+									{quote?.title}
+								</p>
+							) : (
+								<p className="text-center text-xl">{quote?.title}</p>
+							)}
 							<p className="text-center">
 								{Array.isArray(quote?.author)
-									? quote.author.map((a, i) => (
+									? quote.author.map((a: any, i: any) => (
 											<span key={i}>
 												{a.name}
 												{i < quote?.author.length - 1 && ", "}
