@@ -52,7 +52,7 @@ const App = () => {
 	return (
 		<div className="min-h-screen pt-16 pb-8 space-y-8">
 			<div className="text-center space-y-8">
-				<h1 className="sm:text-xl md:text-2xl lg:text-4xl">
+				<h1 className="text-base sm:text-2xl md:text-3xl lg:text-4xl">
 					Representation Theory arXiv ジェネレーター
 				</h1>
 				<p>
@@ -88,11 +88,11 @@ const App = () => {
 					) : (
 						<>
 							{isCoulombBranch ? (
-								<p className="text-center text-2xl text-red-500">
+								<p className="text-center text-xl text-red-500">
 									{quote?.title}
 								</p>
 							) : (
-								<p className="text-center text-2xl">{quote?.title}</p>
+								<p className="text-center text-xl">{quote?.title}</p>
 							)}
 							<p className="text-center pt-2">
 								by &nbsp;
