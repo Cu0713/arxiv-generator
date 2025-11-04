@@ -26,7 +26,6 @@ const App = () => {
 		const res = await axios.get(BASE_URL, { params });
 		const parser = new XMLParser({ ignoreAttributes: false });
 		const feed = parser.parse(res.data);
-		console.log(id);
 		const entries = feed.feed.entry;
 		if (entries.length === 0) {
 			setError(error);
