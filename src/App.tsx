@@ -50,9 +50,9 @@ const App = () => {
 	};
 
 	return (
-		<div className="min-h-screen pt-16 pb-8 space-y-8">
+		<div className="min-h-screen pt-8 pb-8 space-y-8">
 			<div className="text-center space-y-8">
-				<h1 className="text-base sm:text-2xl md:text-3xl lg:text-4xl">
+				<h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl">
 					Representation Theory arXiv ジェネレーター
 				</h1>
 				<p>
