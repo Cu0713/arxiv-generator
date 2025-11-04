@@ -11,7 +11,11 @@ const App = () => {
 	const [error, setError] = useState<any>(null);
 	const [isCoulombBranch, setIsCoulombBranch] = useState<boolean>(false);
 
-	useEffect(() => {}, []);
+	useEffect(() => {
+		if ((window as any).MathJax) {
+			(window as any).MathJax.typesetPromise();
+		}
+	}, [quote?.title]);
 
 	const fetchArxiv = async () => {
 		const id = Math.floor(Math.random() * 500);
@@ -97,8 +101,8 @@ const App = () => {
 							<p className="text-center pt-2">
 								by &nbsp;
 								{Array.isArray(quote?.author)
-									? quote.author.map((a: any, i: any) => (
-											<span key={i}>
+									? quote.author.map((a: any, i: number) => (
+											<span key={a.name}>
 												{a.name}
 												{i < quote?.author.length - 1 && ", "}
 											</span>
