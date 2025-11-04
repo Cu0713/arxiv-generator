@@ -52,7 +52,9 @@ const App = () => {
 	return (
 		<div className="min-h-screen pt-16 pb-8 space-y-8">
 			<div className="text-center space-y-8">
-				<h1 className="text-5xl">Representation Theory arXiv ジェネレーター</h1>
+				<h1 className="sm:text-xl md:text-2xl lg:text-4xl">
+					Representation Theory arXiv ジェネレーター
+				</h1>
 				<p>
 					ボタンを押したらランダムで arXiv の math.RT
 					に投稿された論文が出てくるよ！
