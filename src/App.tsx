@@ -164,7 +164,7 @@ const App = () => {
 								{quote?.id}
 							</a>
 							<p className="text-center"></p>
-							{!isCoulombBranch ? (
+							{isCoulombBranch ? (
 								<div className="pt-8">
 									<p>
 										おめでとうございます！ この論文は Coulomb branch
