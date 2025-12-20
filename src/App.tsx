@@ -2,52 +2,87 @@ import { useEffect, useState } from "react";
 import "./App.css";
 import axios from "axios";
 import { XMLParser } from "fast-xml-parser";
+import { ensureMathJax } from "./function/ensureMathJax";
 
-const BASE_URL = "https://export.arxiv.org/api/query";
+const BASE_URL = "https://arxiv-proxy.cudo-0713.workers.dev";
+type ArxivEntry = {
+  title: string;
+  summary: string;
+  id: string;
+  author: { name: string } | { name: string }[];
+};
 
 const App = () => {
+	const [papers, setPapers] = useState<ArxivEntry[]>([]);
 	const [quote, setQuote] = useState<any>(null);
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const [error, setError] = useState<any>(null);
 	const [isCoulombBranch, setIsCoulombBranch] = useState<boolean>(false);
-
-	useEffect(() => {
-		if ((window as any).MathJax) {
-			(window as any).MathJax.typesetPromise();
-		}
-	}, [quote?.title]);
+	const [mathJaxReady, setMathJaxReady] = useState<boolean>(false);
 
 	const fetchArxiv = async () => {
-		const id = Math.floor(Math.random() * 500);
-		const params = {
-			search_query: "cat:math.RT",
-			start: id.toString(),
-			max_results: "1",
-			sortBy: "submittedDate",
-			sortOrder: "descending",
-		};
+		try{
+			setIsLoading(true);
+			const params = {
+				search_query: "cat:math.RT",
+				start: "0",
+				max_results: "500",
+				sortBy: "submittedDate",
+				sortOrder: "descending",
+			};
 
-		const res = await axios.get(BASE_URL, { params });
-		const parser = new XMLParser({ ignoreAttributes: false });
-		const feed = parser.parse(res.data);
-		const entries = feed.feed.entry;
-		if (entries.length === 0) {
-			setError(error);
+			const res = await axios.get(BASE_URL, { params });
+			const parser = new XMLParser({ ignoreAttributes: false });
+			const feed = parser.parse(res.data);
+			const entries = feed.feed.entry;
+			if (entries.length === 0) {
+				setError("No entries found");
+			}
+			console.log(feed);
+			const list = Array.isArray(entries) ? entries : [entries];
+
+			setPapers(list);
+		} catch (e) {
+			console.error(e);
+			setError(e)
+		} finally {
+			setIsLoading(false);
 		}
-		return Array.isArray(entries) ? entries : [entries];
 	};
 
+	useEffect(() => {
+		fetchArxiv();
+		ensureMathJax()
+			.then(() => setMathJaxReady(true))
+			.catch((e) => {
+				console.error(e);
+				setError(e);
+			});
+	}, []);
+
+	useEffect(() => {
+		if (!mathJaxReady || !quote) return;
+		const mathJax = (window as any).MathJax;
+		if (mathJax?.typesetPromise) {
+			mathJax.typesetPromise();
+		}
+	}, [mathJaxReady, quote]);
+
 	const handleClick = async () => {
-		setIsLoading(true);
-		setError(null);
+		const id = Math.floor(Math.random() * 500)
+		const quote = papers[id];
+		setQuote(quote);
+		setIsCoulombBranch(quote.summary.includes("Coulomb branch"));
+		console.log(papers[id]);
+	};
+
+	const sleep = (ms: number) =>
+  		new Promise(resolve => setTimeout(resolve, ms));
+	const errorHandleClick = async () => {
+  		setIsLoading(true);
 		try {
-			const arxivData = await fetchArxiv();
-			const quote = arxivData[0];
-			setQuote(quote);
-			setIsCoulombBranch(quote.summary.includes("Coulomb branch"));
-		} catch (error) {
-			console.error("Failed to fetch quote:", error);
-			setError(error);
+			await sleep(3000);
+			fetchArxiv();
 		} finally {
 			setIsLoading(false);
 		}
@@ -64,22 +99,34 @@ const App = () => {
 					に投稿された論文が出てくるよ！
 				</p>
 
-				<button
-					className="bg-black text-white flex mx-auto rounded-xl py-4 px-8"
-					type="button"
-					onClick={handleClick}
-				>
-					ボタンを押せ！
-				</button>
+				{error ? (
+					<button
+						className="bg-black text-white flex mx-auto rounded-xl py-4 px-8"
+						type="button"
+						onClick={errorHandleClick}
+					>
+						論文を読み込む！
+					</button>
+				) : (
+					<button
+						className="bg-black text-white flex mx-auto rounded-xl py-4 px-8"
+						type="button"
+						onClick={handleClick}
+					>
+						ボタンを押せ！
+					</button>					
+				)
+				}
+
 			</div>
 			<div className="flex justify-center">
 				<div className="text-center">
-					{quote === null ? (
-						<p>どんな論文が出てくるかな～？</p>
-					) : isLoading ? (
+					{isLoading ? (
 						<div className="flex justify-center items-center h-32">
 							<div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-500" />
 						</div>
+					) : quote === null ? (
+						<p>どんな論文が出てくるかな～？</p>
 					) : error ? (
 						<div className="flex justify-center items-center h-18">
 							<div className="text-center font-black">
@@ -132,7 +179,7 @@ const App = () => {
 											className="italic underline text-blue-500"
 										>
 											Towards a mathematical definition of Coulomb branches of
-											3-dimensional \mathcal N=4 gauge theories, II
+											3-dimensional \(\\mathcal{N}=4\) gauge theories, II
 										</a>
 									</p>
 									<p>を読んでみよう！</p>
