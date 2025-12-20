@@ -3,6 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "homepage": "https://cu0713.github.io/arxiv-generator",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
