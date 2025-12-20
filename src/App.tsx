@@ -164,7 +164,7 @@ const App = () => {
 								{quote?.id}
 							</a>
 							<p className="text-center"></p>
-							{isCoulombBranch ? (
+							{!isCoulombBranch ? (
 								<div className="pt-8">
 									<p>
 										おめでとうございます！ この論文は Coulomb branch
@@ -179,7 +179,7 @@ const App = () => {
 											className="italic underline text-blue-500"
 										>
 											Towards a mathematical definition of Coulomb branches of
-											3-dimensional \(\\mathcal{N}=4\) gauge theories, II
+											3-dimensional $\mathcal N = 4$ gauge theories, II
 										</a>
 									</p>
 									<p>を読んでみよう！</p>
