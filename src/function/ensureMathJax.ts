@@ -1,5 +1,14 @@
+export type MathJaxWindow = Window & {
+	MathJax?: {
+		startup?: {
+			promise?: Promise<void>;
+		};
+		typesetPromise?: () => Promise<void>;
+	};
+};
+
 export const ensureMathJax = async (): Promise<void> => {
-	const existingMathJax = (window as any).MathJax;
+	const existingMathJax = (window as MathJaxWindow).MathJax;
 
 	// MathJax already loaded and still starting up
 	if (existingMathJax?.startup?.promise) {
@@ -31,12 +40,12 @@ export const ensureMathJax = async (): Promise<void> => {
 			return;
 		}
 		script.addEventListener(
-			"load",
-			() => {
-				const mathJax = (window as any).MathJax;
-				if (mathJax?.startup?.promise) {
-					mathJax.startup.promise.then(() => resolve());
-				} else {
+				"load",
+				() => {
+					const mathJax = (window as MathJaxWindow).MathJax;
+					if (mathJax?.startup?.promise) {
+						mathJax.startup.promise.then(() => resolve());
+					} else {
 					resolve();
 				}
 			},
