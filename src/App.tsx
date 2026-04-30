@@ -46,7 +46,7 @@ const App = () => {
 			const params = {
 				search_query: buildSearchQuery(keyword),
 				start: "0",
-				max_results: "1000",
+				max_results: "300",
 				sortBy: "submittedDate",
 				sortOrder: "descending",
 			};
